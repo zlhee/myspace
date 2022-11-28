@@ -1,0 +1,106 @@
+library(shiny)
+library(dplyr)
+library(ggplot2)
+library(DT)
+library(ggrepel)
+library(tidyr)
+library(shinycssloaders)
+library(shinythemes)
+library(SwimmeR)
+
+# Define UI
+ui <- fluidPage(
+  navbarPage("BE HEALTHY", theme = shinytheme("cerulean"),
+             tabPanel("BMI", fluid = TRUE, icon = icon("chart-bar"),
+                      tags$style(button_color_css),
+                      sidebarLayout(
+                        sidebarPanel(
+                          titlePanel("비만도 자가진단 테스트"),
+                          selectInput("obs1","지역명",choices=c("서울", "부산", "대구", "인천", "광주", "대전", "울산", "세종", "경기", "강원", "충북", "충남", "전북", "전남", "경북", "경남", "제주")),
+                          selectInput("dataset1", "만나이",choices = seq(1,100,1)),
+                          fluidRow(column(3,
+                                          
+                                          checkboxGroupInput(inputId = "GenderFinder",
+                                                             label = "성별:",
+                                                             choices = c("남성" = "M", "여성" = "F")),
+                          )),
+                          selectInput("obs4","직업",choices=c("관리자, 전문가 및 관련 종사자", "사무종사자", "서비스 및 판매 종사자", "농림어업 숙련 종사자", "기능원, 장치기계조작 및 조립종사자", "단순노무종사자", "무직(주부,학생 등)")),
+                          selectInput("obs5","기초생활수급 여부",choices=c("수급경험 있음(과거 또는 현재)", "수급경험 없음", "모름")),
+                          selectInput("obs6","결혼여부",choices=c("기혼", "미혼","모름")),
+                          selectInput("obs7","결혼상태",choices=c("유배우자, 동거", "유배우자, 별거", "사별", "이혼", "응답거부", "모름")),
+                          selectInput("obs8","고혈압 의사진단 여부",choices=c("없음", "있음", "비해당(청소년, 소아)", "모름")),
+                          selectInput("obs9","이상지질혈증 의사진단 여부",choices=c("없음", "있음", "비해당(청소년, 소아)", "모름")),
+                          selectInput("obs10","관절염 의사진단 여부",choices=c("없음", "있음", "비해당(청소년, 소아)")),
+                          selectInput("obs11","골관절염 의사진단 여부",choices=c("없음", "있음", "비해당(청소년, 소아)", "모름")),
+                          selectInput("obs12","당뇨병 의사진단 여부",choices=c("없음", "있음", "비해당(청소년, 소아)", "모름")),
+                          selectInput("obs13","갑상선암 의사진단 여부",choices=c("없음", "있음", "비해당(청소년, 소아)", "모름")),
+                          selectInput("obs14","통풍 의사진단 여부",choices=c("없음", "있음", "비해당(청소년, 소아)", "모름")),
+                          selectInput("obs15","운동능력",choices=c("나는 걷는데 지장이 없음", "나는 걷는데 다소 지장이 있음", "나는 종일 누워있어야 함", "비해당(청소년, 소아", "모름")),
+                          selectInput("obs16","학력",choices=c("서당/한학", "무학", "초등학교", "중학교", "고등학교", "2년/3년제 대학", "4년제 대학", "대학원", "비해당(소아)", "모름")),
+                          selectInput("obs17","주관적 체형인식",choices=c("매우 마른편", "약간 마른편", "보통", "약간 비만", "매우 비만", "비해당(만6세 미만)", "모름")),
+                          selectInput("obs18","1년간 음주빈도",choices=c("최근 1년간 전혀 마시지 않았다", "월1회미만", "월1회정도", "월2~4회", "주2~3회", "주4회이상", "비해당", "모름")),
+                          selectInput("obs19","평소 스트레스 인지 정도",choices=c("대단히 많이 느낀다", "많이 느끼는 편이다", "조금 느끼는 편이다", "거의 느끼지 않는다", "비해당(소아)", "모름")),
+                          selectInput("obs20","현재 일반담배 흡연 여부",choices=c("매일피움", "가끔피움", "과거엔 피웠으나, 현재 피우지 않음", "비해당", "모름")),
+                          selectInput("obs21","1주 동안 아침식사 빈도",choices=c("주5~7회", "주3~4회", "주1~2회", "거의 안한다(주0회)")),
+                          selectInput("obs22","1주 동안 점심식사 빈도",choices=c("주5~7회", "주3~4회", "주1~2회", "거의 안한다(주0회)")),
+                          selectInput("obs23","1주 동안 저녁식사 빈도",choices=c("주5~7회", "주3~4회", "주1~2회", "거의 안한다(주0회)")),
+                          helpText("  "),
+                          actionButton("update", "비만도 확인하기")),
+                          
+                          mainPanel(h4("비만 단계"),tableOutput("str"))))),
+  fluidRow(
+    column(4,
+         style = "background-color: #E8E8E8",
+         
+         br(),
+         div(style="display: inline-block;vertical-align:top; width: 200px;",
+             strong("수축기 혈압"), 
+             textInput("ZZz", NULL, width = 60)),
+         
+         div(style="display: inline-block;vertical-align:top; width: 200px;",
+             strong("이완기 혈압"), 
+             textInput("ZZn", NULL, width = 60)),
+         
+         div(style="display: inline-block;vertical-align:top; width: 200px;",
+             strong("공복혈당"),
+             textInput("ZZsd1", NULL, width = 60)), 
+         
+         div(style="display: inline-block;vertical-align:top; width: 200px;",
+             strong("당화혈색소"),
+             textInput("ZZse1", NULL, width = 60)),
+         
+         div(style="display: inline-block;vertical-align:top; width: 200px;",
+             strong("인슐린"),
+             textInput("ZZsd2", NULL, width = 60)),
+         
+         div(style="display: inline-block;vertical-align:top; width: 200px;",
+             strong("요산"),
+             textInput("ZZse2", NULL, width = 60)),
+         
+         div(style="display: inline-block;vertical-align:top; width: 200px;",
+             strong("수분섭취량"),
+             textInput("ZZsd3", NULL, width = 60)),
+         
+         div(style="display: inline-block;vertical-align:top; width: 200px;",
+             strong("총 콜레스테롤"),
+             textInput("ZZse3", NULL, width = 60)),
+         br(),
+         submitButton("Calculate")
+         
+  )
+  )
+)
+
+server <- function(input, output) {
+  
+  observeEvent(input$update, {   
+    
+    even_num <- sample(even_number,input$obs2,replace=F)
+    odd_num <- sample(odd_number,input$obs1,replace=F)
+    
+    output$num <- renderPrint({
+      cat("지역명 ",length(even_num),"시 =" ,even_num,"<br/>","<br/>",
+          "남녀 " ,length(odd_num),"성 = ",odd_num,"<br/>","<br/>",
+          length(even_num)+length(odd_num),"비만 단계 = ",mean(append(even_num,odd_num)))})})}
+
+shinyApp(ui, server)
