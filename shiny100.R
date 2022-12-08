@@ -22,7 +22,7 @@ library(SwimmeR)
 
 
 # model
-source("C:/Users/Kim JiHee/Documents/카카오톡 받은 파일/cst_model.R")
+source("cst_model.R")
 model2 = train(target~., 
                data = x_train_scaled, 
                method = "ranger", 
