@@ -21,7 +21,8 @@ st.set_page_config(
     layout='wide'
 )
 
-st.title('김건강님 주간 라이프로그 분석 결과')
+st.title('DemePre')
+st.subheader('치매 고위험군 웨어러블 라이프로그 분석')
 st.title('')
 
 # 이메일 입력 위젯 생성
