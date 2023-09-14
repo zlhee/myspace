@@ -1,6 +1,7 @@
 ###### 환자 이메일 : nia+279@rowan.kr
 ###### terminal에 입력 -> streamlit run test2.py
 !pip install streamlit_option_menu
+!pip install --upgrade pip
 
 import streamlit as st
 from datetime import datetime, timedelta, date
